@@ -39,6 +39,7 @@ function display() {
 			// tile.innerHTML = board[i][j];
 			tile.setAttribute("data-x", i);
 			tile.setAttribute("data-y", j);
+			tile.setAttribute("data-revealed", false);
 			tile.setAttribute("data-value", String(board[i][j]));
 			tile.className = "tile";
 			container.appendChild(tile);
@@ -47,19 +48,29 @@ function display() {
 	}
 }
 
-function reveal(x, y, target) {
-	target.innerHTML = board[x][y];
-	target.style.color = colors[board[x][y]];
-	if (board[x][y] == -1) {
-		//alert("YOU SUCK");
-		window.location.reload();
-	} /* else if (board[x][y] == 0) {
-		for (i = -1; i <= 1; i++) {
-			for (j = -1; j <=1; j++) {
-
+function reveal(x, y) {
+	if (x < 0 || x > GRIDLENGTH - 1 || y < 0 || y > GRIDHEIGHT - 1) {
+		return;
+	}
+	target = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+	console.log(target);
+	if (target.dataset.revealed == "false") {
+		target.innerHTML = board[x][y];
+		target.style.color = colors[board[x][y]];
+		target.dataset.revealed = "true";
+		if (board[x][y] == -1) {
+			//alert("YOU SUCK");
+			//window.location.reload();
+		} else if (board[x][y] == 0) {
+			for (i = -1; i <= 1; i++) {
+				for (j = -1; j <=1; j++) {
+					reveal(parseInt(x) + i, parseInt(y) + j);
+				}
 			}
 		}
-	} */ //add implementation for recursively revealing 0 tiles later
+
+	}
+
 }
 
 container.addEventListener("click", (event) => {
@@ -71,7 +82,7 @@ container.addEventListener("click", (event) => {
 			alert("YOU SUCK");
 			window.location.reload();
 		} */
-		reveal(event.target.dataset.x, event.target.dataset.y, event.target);
+		reveal(event.target.dataset.x, event.target.dataset.y);
 	}
 });
 container.addEventListener("contextmenu", (event) => {
